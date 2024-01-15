@@ -1,4 +1,4 @@
-const { fetchTopics } = require("../models/news.models");
+const { fetchTopics, fetchArticle } = require("../models/news.models");
 
 async function getTopics(req, res, next) {
   try {
@@ -7,4 +7,14 @@ async function getTopics(req, res, next) {
   } catch (error) {}
 }
 
-module.exports = { getTopics };
+async function getArticle(req, res, next) {
+  try {
+    const { article_id } = req.params;
+
+    const data = await fetchArticle(article_id);
+    res.status(200).send({ article: data.rows[0] });
+  } catch (error) {
+    next(error);
+  }
+}
+module.exports = { getTopics, getArticle };
