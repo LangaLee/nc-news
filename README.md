@@ -1,3 +1,3 @@
 # Northcoders News API
 
-For instructions, please head over to [L2C NC News](https://l2c.northcoders.com/courses/be/nc-news).
+You will need to create two .env files(.env.test & .env.development) in order to run the project. In these files you will need to set PGDATABASE to the correct dtabase for the environment
