@@ -3,6 +3,7 @@ const {
   fetchArticle,
   fetchArticles,
   fetchEndpoints,
+  fetchArticleComments,
 } = require("../models/news.models");
 
 async function getTopics(req, res, next) {
@@ -17,7 +18,7 @@ async function getArticle(req, res, next) {
     const { article_id } = req.params;
 
     const data = await fetchArticle(article_id);
-    res.status(200).send({ article: data.rows[0] });
+    res.status(200).send({ article: data });
   } catch (error) {
     next(error);
   }
@@ -36,4 +37,20 @@ async function getEndpoints(req, res, next) {
   const endpoints = await fetchEndpoints();
   res.status(200).send({ endpoints });
 }
-module.exports = { getTopics, getArticle, getArticles, getEndpoints };
+
+async function getArticleComments(req, res, next) {
+  try {
+    const { article_id } = req.params;
+    const comments = await fetchArticleComments(article_id);
+    res.status(200).send({ comments: comments[0].rows });
+  } catch (error) {
+    next(error);
+  }
+}
+module.exports = {
+  getTopics,
+  getArticle,
+  getArticles,
+  getEndpoints,
+  getArticleComments,
+};

@@ -106,4 +106,51 @@ describe("testing endpoints", () => {
       }
     });
   });
+  describe("GET /api/articles/:article_id/comments", () => {
+    test("200: returns an array with all available comments for that article", async () => {
+      const response = await request(app).get("/api/articles/1/comments");
+      const articleComments = response.body.comments;
+      expect(response.status).toBe(200);
+      expect(Array.isArray(articleComments)).toBe(true);
+    });
+    test("200: each object has properties", async () => {
+      const response = await request(app).get("/api/articles/1/comments");
+      const articleComments = response.body.comments;
+      articleComments.forEach((comment) => {
+        expect(typeof comment.votes).toBe("number");
+        expect(typeof comment.votes).toBe("number");
+        expect(typeof comment.created_at).toBe("string");
+        expect(typeof comment.author).toBe("string");
+        expect(typeof comment.body).toBe("string");
+        expect(typeof comment.article_id).toBe("number");
+      });
+    });
+    test("200: when there are no comments responds with an empty array", async () => {
+      const response = await request(app).get("/api/articles/7/comments");
+      const articleComments = response.body.comments;
+      expect(response.status).toBe(200);
+      expect(articleComments.length).toBe(0);
+    });
+    test("200: comments should be served with the most recent first", async () => {
+      const response = await request(app).get("/api/articles/1/comments");
+      const articleComments = response.body.comments;
+      expect(response.status).toBe(200);
+      expect(articleComments).toBeSorted({
+        descending: true,
+        key: "created_at",
+      });
+    });
+    test("400: when passed an invalid id", async () => {
+      const response = await request(app).get("/api/articles/hmm/comments");
+      const msg = response.body.msg;
+      expect(response.status).toBe(400);
+      expect(msg).toBe("Bad Request");
+    });
+    test("404: when passed a valid but not available id", async () => {
+      const response = await request(app).get("/api/articles/1000/comments");
+      const msg = response.body.msg;
+      expect(response.status).toBe(404);
+      expect(msg).toBe("Not found");
+    });
+  });
 });
