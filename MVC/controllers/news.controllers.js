@@ -2,6 +2,7 @@ const {
   fetchTopics,
   fetchArticle,
   fetchArticles,
+  fetchEndpoints,
 } = require("../models/news.models");
 
 async function getTopics(req, res, next) {
@@ -30,4 +31,9 @@ async function getArticles(req, res, next) {
     next(error);
   }
 }
-module.exports = { getTopics, getArticle, getArticles };
+
+async function getEndpoints(req, res, next) {
+  const endpoints = await fetchEndpoints();
+  res.status(200).send({ endpoints });
+}
+module.exports = { getTopics, getArticle, getArticles, getEndpoints };

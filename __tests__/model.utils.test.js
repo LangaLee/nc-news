@@ -1,7 +1,7 @@
 const { formatArticles } = require("../utils/model.utils");
 const { articleData, commentData } = require("../db/data/test-data/index");
 
-describe.only("testing utils", () => {
+describe("testing utils", () => {
   describe("formatArticles", () => {
     test("does not mutate the data passed", () => {
       const input = [
