@@ -1,10 +1,11 @@
 const db = require("../../db/connection");
-
+const { formatArticles } = require("../../utils/model.utils");
 async function fetchTopics() {
-  const data = await db.query(`Select * FROM topics;`);
+  const data = await db.query(`Select * FROM topics`);
   return data;
 }
 
+// fix this for SQL injection
 async function fetchArticle(id) {
   const data = await db.query(`SELECT * FROM articles 
   WHERE article_id = ${id}
@@ -14,4 +15,12 @@ async function fetchArticle(id) {
   return data;
 }
 
-module.exports = { fetchTopics, fetchArticle };
+async function fetchArticles() {
+  const articles = await db.query(`SELECT * FROM articles 
+    ORDER BY created_at DESC
+  `);
+  const comments = await db.query(`SELECT * FROM comments`);
+  return formatArticles(articles.rows, comments.rows);
+}
+
+module.exports = { fetchTopics, fetchArticle, fetchArticles };
