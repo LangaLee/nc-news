@@ -3,6 +3,7 @@ const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data/index");
 const app = require("../app");
+const fs = require("fs/promises");
 
 beforeEach(() => seed(data));
 afterAll(() => db.end());
@@ -84,6 +85,25 @@ describe("testing endpoints", () => {
       const response = await request(app).get("/api/articles");
       const articles = response.body.articles;
       expect(articles).toBeSorted({ descending: true, key: "created_at" });
+    });
+  });
+  describe("GET /api", () => {
+    test("200: returns an object with all available endpoints", async () => {
+      const response = await request(app).get("/api");
+      expect(response.status).toBe(200);
+      expect(typeof response.body.endpoints).toBe("object");
+      const endpointsObject = await fs.readFile(
+        `${__dirname}/../endpoints.json`,
+        "utf-8"
+      );
+      expect(response.body.endpoints).toEqual(JSON.parse(endpointsObject));
+    });
+    test("200: returns an object with all a description on each endpoint", async () => {
+      const response = await request(app).get("/api");
+      const endpoints = response.body.endpoints;
+      for (const key in endpoints) {
+        expect(typeof endpoints[key].description).toBe("string");
+      }
     });
   });
 });

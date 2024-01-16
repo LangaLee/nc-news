@@ -1,5 +1,7 @@
 const db = require("../../db/connection");
 const { formatArticles } = require("../../utils/model.utils");
+const fs = require("fs/promises");
+
 async function fetchTopics() {
   const data = await db.query(`Select * FROM topics`);
   return data;
@@ -23,4 +25,12 @@ async function fetchArticles() {
   return formatArticles(articles.rows, comments.rows);
 }
 
-module.exports = { fetchTopics, fetchArticle, fetchArticles };
+async function fetchEndpoints() {
+  const endpoints = await fs.readFile(
+    "/home/lee/Documents/be-nc-news/MVC/models/../../endpoints.json",
+    "utf-8"
+  );
+  return JSON.parse(endpoints);
+}
+
+module.exports = { fetchTopics, fetchArticle, fetchArticles, fetchEndpoints };
