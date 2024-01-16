@@ -1,10 +1,17 @@
 const express = require("express");
-const { getTopics, getArticle } = require("./MVC/controllers/news.controllers");
+const {
+  getTopics,
+  getArticle,
+  getArticles,
+} = require("./MVC/controllers/news.controllers");
 const app = express();
 
 app.get("/api/topics", getTopics);
 
 app.get("/api/articles/:article_id", getArticle);
+
+app.get("/api/articles", getArticles);
+
 app.get("*", (req, res) => {
   res.status(404).send({ msg: "Not found" });
 });
