@@ -153,4 +153,74 @@ describe("testing endpoints", () => {
       expect(msg).toBe("Not found");
     });
   });
+  describe("POST /api/articles/:articles_id/comments", () => {
+    test("400: when passed a body or username that does not have required properties", async () => {
+      const response = await request(app)
+        .post("/api/articles/1/comments")
+        .send({
+          username: "Anonymous",
+        });
+      expect(response.status).toBe(400);
+      expect(response.body.msg).toBe("Bad Request");
+
+      const response1 = await request(app)
+        .post("/api/articles/1/comments")
+        .send({
+          body: "Anonymous user sends their regards",
+        });
+      expect(response1.status).toBe(400);
+      expect(response1.body.msg).toBe("Bad Request");
+    });
+    test("404: when posting to an article_id that does not exist but is valid", async () => {
+      const response = await request(app)
+        .post("/api/articles/600/comments")
+        .send({
+          username: "Anonymous",
+          body: "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+        });
+      expect(response.status).toBe(404);
+      expect(response.body.msg).toBe("Not found");
+    });
+    test("400: when posting to an article_id that is invalid", async () => {
+      const response = await request(app)
+        .post("/api/articles/hmm/comments")
+        .send({
+          username: "Anonymous",
+          body: "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+        });
+      expect(response.status).toBe(400);
+      expect(response.body.msg).toBe("Bad Request");
+    });
+    test("202: adds the comment posted", async () => {
+      const response = await request(app)
+        .post("/api/articles/1/comments")
+        .send({
+          username: "lurker",
+          body: "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+        });
+      const comment = response.body.comment;
+      expect(response.status).toBe(202);
+      expect(typeof comment.comment_id).toBe("number");
+      expect(typeof comment.body).toBe("string");
+      expect(typeof comment.article_id).toBe("number");
+      expect(typeof comment.author).toBe("string");
+      expect(typeof comment.votes).toBe("number");
+      expect(typeof comment.created_at).toBe("string");
+    });
+    test("400: when a user does not exist", async () => {
+      const response = await request(app)
+        .post("/api/articles/1/comments")
+        .send({
+          username: "Anonymous",
+          body: "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+        });
+      const message = response.body.msg;
+      expect(response.status).toBe(400);
+      expect(message).toBe("Bad Request");
+    });
+  });
 });
+
+/* 
+ body: "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+*/

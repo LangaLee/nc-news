@@ -42,10 +42,30 @@ async function fetchArticleComments(id) {
   return Promise.all([comments, article]);
 }
 
+async function addArticleComment(id, comment) {
+  await fetchArticle(id);
+  await db.query(`SELECT * FROM users WHERE username = $1`, [comment.username]);
+  if (
+    typeof comment.username !== "string" ||
+    typeof comment.body !== "string"
+  ) {
+    return Promise.reject("400");
+  }
+  const response = await db.query(
+    format(
+      `INSERT INTO comments (body, author, article_id, votes) VALUES %L RETURNING *;
+    `,
+      [[comment.body, comment.username, id, 0]]
+    )
+  );
+  return response.rows[0];
+}
+
 module.exports = {
   fetchTopics,
   fetchArticle,
   fetchArticles,
   fetchEndpoints,
   fetchArticleComments,
+  addArticleComment,
 };

@@ -4,6 +4,7 @@ const {
   fetchArticles,
   fetchEndpoints,
   fetchArticleComments,
+  addArticleComment,
 } = require("../models/news.models");
 
 async function getTopics(req, res, next) {
@@ -47,10 +48,23 @@ async function getArticleComments(req, res, next) {
     next(error);
   }
 }
+
+async function postArticleComment(req, res, next) {
+  try {
+    const { article_id } = req.params;
+    const commentToAdd = req.body;
+    const comment = await addArticleComment(article_id, commentToAdd);
+    res.status(202).send({ comment });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   getTopics,
   getArticle,
   getArticles,
   getEndpoints,
   getArticleComments,
+  postArticleComment,
 };
