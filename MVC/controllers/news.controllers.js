@@ -6,6 +6,7 @@ const {
   fetchArticleComments,
   addArticleComment,
   updateVote,
+  removeComment,
 } = require("../models/news.models");
 
 async function getTopics(req, res, next) {
@@ -66,8 +67,17 @@ async function addVote(req, res, next) {
     const { article_id } = req.params;
     const votes = req.body;
     const article = await updateVote(article_id, votes);
-    console.log(article);
     res.status(200).send({ article });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function deleteComment(req, res, next) {
+  try {
+    const { comment_id } = req.params;
+    await removeComment(comment_id);
+    res.status(204).send();
   } catch (error) {
     next(error);
   }
@@ -81,4 +91,5 @@ module.exports = {
   getArticleComments,
   postArticleComment,
   addVote,
+  deleteComment,
 };
