@@ -6,6 +6,7 @@ const {
   getEndpoints,
   getArticleComments,
   postArticleComment,
+  addVote,
 } = require("./MVC/controllers/news.controllers");
 const app = express();
 
@@ -22,6 +23,8 @@ app.get("/api/articles/:article_id", getArticle);
 app.get("/api/articles/:article_id/comments", getArticleComments);
 
 app.post("/api/articles/:article_id/comments", postArticleComment);
+
+app.patch("/api/articles/:article_id", addVote);
 
 app.get("*", (req, res) => {
   res.status(404).send({ msg: "Not found" });

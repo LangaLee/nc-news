@@ -219,6 +219,43 @@ describe("testing endpoints", () => {
       expect(message).toBe("Bad Request");
     });
   });
+  describe("PACTH /api/articles/:article_id", () => {
+    test("404: when passed an id that is valid but doesnt exist", async () => {
+      const response = await request(app)
+        .patch("/api/articles/500")
+        .send({ inc_votes: 20 });
+      expect(response.status).toBe(404);
+      expect(response.body.msg).toBe("Not found");
+    });
+    test("400: when passed an id that is invalid", async () => {
+      const response = await request(app)
+        .patch("/api/articles/hmm")
+        .send({ inc_votes: 20 });
+      expect(response.status).toBe(400);
+      expect(response.body.msg).toBe("Bad Request");
+    });
+    test("400: when passed a body in the wrong form", async () => {
+      const response = await request(app)
+        .patch("/api/articles/2")
+        .send({ increment_vote: 2 });
+      expect(response.status).toBe(400);
+      expect(response.body.msg).toBe("Bad Request");
+    });
+    test("200: updates the votes to the requested article", async () => {
+      const response = await request(app)
+        .patch("/api/articles/1")
+        .send({ inc_votes: -2 });
+      const { article } = response.body;
+      expect(response.status).toBe(200);
+      expect(typeof article.author).toBe("string");
+      expect(typeof article.title).toBe("string");
+      expect(typeof article.article_id).toBe("number");
+      expect(typeof article.topic).toBe("string");
+      expect(typeof article.created_at).toBe("string");
+      expect(typeof article.votes).toBe("number");
+      expect(typeof article.article_img_url).toBe("string");
+    });
+  });
 });
 
 /* 

@@ -61,6 +61,20 @@ async function addArticleComment(id, comment) {
   return response.rows[0];
 }
 
+async function updateVote(id, votes) {
+  // if (typeof id !== "number") return Promise.reject("400");
+  await fetchArticle(id);
+  if (!votes.hasOwnProperty("inc_votes") || typeof votes.inc_votes !== "number")
+    return Promise.reject("400");
+  const article = await db.query(
+    `UPDATE articles SET votes = votes + $1 
+WHERE article_id = $2 RETURNING * 
+  `,
+    [votes.inc_votes, id]
+  );
+  return article.rows[0];
+}
+
 module.exports = {
   fetchTopics,
   fetchArticle,
@@ -68,4 +82,5 @@ module.exports = {
   fetchEndpoints,
   fetchArticleComments,
   addArticleComment,
+  updateVote,
 };
