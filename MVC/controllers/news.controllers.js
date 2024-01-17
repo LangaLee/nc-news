@@ -5,6 +5,7 @@ const {
   fetchEndpoints,
   fetchArticleComments,
   addArticleComment,
+  updateVote,
 } = require("../models/news.models");
 
 async function getTopics(req, res, next) {
@@ -60,6 +61,18 @@ async function postArticleComment(req, res, next) {
   }
 }
 
+async function addVote(req, res, next) {
+  try {
+    const { article_id } = req.params;
+    const votes = req.body;
+    const article = await updateVote(article_id, votes);
+    console.log(article);
+    res.status(200).send({ article });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   getTopics,
   getArticle,
@@ -67,4 +80,5 @@ module.exports = {
   getEndpoints,
   getArticleComments,
   postArticleComment,
+  addVote,
 };
