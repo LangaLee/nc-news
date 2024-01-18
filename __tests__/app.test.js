@@ -256,6 +256,23 @@ describe("testing endpoints", () => {
       expect(typeof article.article_img_url).toBe("string");
     });
   });
+  describe("DELETE /api/comments/:comment_id", () => {
+    test("204: deletes the given comment by comment_id", async () => {
+      const response = await request(app).delete("/api/comments/18");
+      expect(response.status).toBe(204);
+      expect(response.body).toEqual({});
+    });
+    test("404: when passed a comment_id that is valid but doesnt exist", async () => {
+      const response = await request(app).delete("/api/comments/30");
+      expect(response.status).toBe(404);
+      expect(response.body.msg).toBe("Not found");
+    });
+    test("400: when passed a comment_id that is invalid", async () => {
+      const response = await request(app).delete("/api/comments/hmm");
+      expect(response.status).toBe(400);
+      expect(response.body.msg).toBe("Bad Request");
+    });
+  });
 });
 
 /* 
