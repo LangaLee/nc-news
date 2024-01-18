@@ -279,11 +279,34 @@ describe("testing endpoints", () => {
       const users = response.body.users;
       expect(response.status).toBe(200);
       users.forEach((user) => {
-        console.log(user);
         expect(typeof user.username).toBe("string");
         expect(typeof user.name).toBe("string");
         expect(typeof user.avatar_url).toBe("string");
       });
+    });
+  });
+  describe("GET /api/articles?topic=requested_topic", () => {
+    test("200: returns articles on that topic", async () => {
+      const response = await request(app).get("/api/articles?topic=mitch");
+      const { articles } = response.body;
+      expect(response.status).toBe(200);
+      const query = articles.every((article) => {
+        return article.topic === "mitch";
+      });
+      expect(query).toBe(true);
+    });
+    test("200: returns all articles if query is omitted", async () => {
+      const response = await request(app).get("/api/articles?topic");
+      expect(response.status).toBe(200);
+      const { articles } = response.body;
+      expect(Array.isArray(articles)).toBe(true);
+      expect(articles.length).toBe(13);
+    });
+    test("200: when passed the query is a topic that doesnt exist", async () => {
+      const response = await request(app).get("/api/articles?topic=music");
+      const { articles } = response.body;
+      expect(response.status).toBe(200);
+      expect(articles).toHaveLength(0);
     });
   });
 });
