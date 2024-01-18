@@ -1,3 +1,4 @@
+const { query } = require("../../db/connection");
 const {
   fetchTopics,
   fetchArticle,
@@ -30,7 +31,8 @@ async function getArticle(req, res, next) {
 
 async function getArticles(req, res, next) {
   try {
-    const articles = await fetchArticles();
+    const { topic } = req.query;
+    const articles = await fetchArticles(topic);
     res.status(200).send({ articles });
   } catch (error) {
     next(error);

@@ -17,10 +17,19 @@ async function fetchArticle(id) {
   return data.rows[0];
 }
 
-async function fetchArticles() {
-  const articles = await db.query(`SELECT * FROM articles 
-    ORDER BY created_at DESC
-  `);
+async function fetchArticles(query) {
+  let queryStr = `SELECT * FROM articles`;
+
+  const queryValue = [];
+
+  if (query !== undefined && query.length !== 0) {
+    queryStr += ` WHERE topic = $1`;
+    queryValue.push(query);
+  }
+  queryStr += ` ORDER BY created_at DESC`;
+
+  const articles = await db.query(queryStr, queryValue);
+
   const comments = await db.query(`SELECT * FROM comments`);
   return formatArticles(articles.rows, comments.rows);
 }
