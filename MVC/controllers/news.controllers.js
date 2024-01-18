@@ -7,6 +7,7 @@ const {
   addArticleComment,
   updateVote,
   removeComment,
+  fetchUsers,
 } = require("../models/news.models");
 
 async function getTopics(req, res, next) {
@@ -83,6 +84,15 @@ async function deleteComment(req, res, next) {
   }
 }
 
+async function getUsers(req, res, next) {
+  try {
+    const users = await fetchUsers();
+    res.status(200).send({ users });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 module.exports = {
   getTopics,
   getArticle,
@@ -92,4 +102,5 @@ module.exports = {
   postArticleComment,
   addVote,
   deleteComment,
+  getUsers,
 };

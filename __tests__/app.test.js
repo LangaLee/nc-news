@@ -273,6 +273,19 @@ describe("testing endpoints", () => {
       expect(response.body.msg).toBe("Bad Request");
     });
   });
+  describe("GET /api/users", () => {
+    test("200: returns an array of objects with users", async () => {
+      const response = await request(app).get("/api/users");
+      const users = response.body.users;
+      expect(response.status).toBe(200);
+      users.forEach((user) => {
+        console.log(user);
+        expect(typeof user.username).toBe("string");
+        expect(typeof user.name).toBe("string");
+        expect(typeof user.avatar_url).toBe("string");
+      });
+    });
+  });
 });
 
 /* 

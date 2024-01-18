@@ -86,6 +86,11 @@ async function removeComment(id) {
   return;
 }
 
+async function fetchUsers() {
+  const userData = await db.query(`SELECT * FROM users`);
+  return userData.rows;
+}
+
 module.exports = {
   fetchTopics,
   fetchArticle,
@@ -95,4 +100,5 @@ module.exports = {
   addArticleComment,
   updateVote,
   removeComment,
+  fetchUsers,
 };
