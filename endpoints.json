@@ -109,5 +109,27 @@
       "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
       "comment_count": 11
     }
+  },
+  "GET /api/articles?sort_by=author&&order=asc": {
+    "description": "allows user to request articles sorted and ordered by the queries they put",
+    "sortValues": [
+      "AUTHOR",
+      "ARTICLE_ID",
+      "TOPIC",
+      "TITLE",
+      "VOTES",
+      "COMMENT_COUNT"
+    ],
+    "order": ["ASC", "DESC"],
+    "exampleResponse": {
+      "article_id": 9,
+      "title": "They're not exactly dogs, are they?",
+      "topic": "mitch",
+      "author": "butter_bridge",
+      "created_at": "2020-06-06T09:10:00.000Z",
+      "votes": 0,
+      "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+      "comment_count": 2
+    }
   }
 }

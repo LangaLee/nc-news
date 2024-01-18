@@ -32,16 +32,35 @@ async function fetchArticle(id, query) {
   return article;
 }
 
-async function fetchArticles(query) {
+async function fetchArticles(topic, sort_by, order) {
   let queryStr = `SELECT * FROM articles`;
-
+  const orderValues = ["ASC", "DESC"];
+  const sortValues = [
+    "AUTHOR",
+    "ARTICLE_ID",
+    "TOPIC",
+    "TITLE",
+    "VOTES",
+    "COMMENT_COUNT",
+  ];
   const queryValue = [];
 
-  if (query !== undefined && query.length !== 0) {
+  if (topic !== undefined && topic.length !== 0) {
     queryStr += ` WHERE topic = $1`;
-    queryValue.push(query);
+    queryValue.push(topic);
   }
-  queryStr += ` ORDER BY created_at DESC`;
+
+  if (sort_by !== undefined && sortValues.includes(sort_by.toUpperCase())) {
+    queryStr += ` ORDER BY ${sort_by}`;
+  } else if (sort_by !== undefined && !sortValues.includes(sort_by)) {
+    return Promise.reject("400");
+  } else queryStr += ` ORDER BY created_at`;
+
+  if (order !== undefined && orderValues.includes(order.toUpperCase())) {
+    queryStr += ` ${order}`;
+  } else if (order !== undefined && !orderValues.includes(order)) {
+    return Promise.reject("400");
+  } else queryStr += ` DESC`;
 
   const articles = await db.query(queryStr, queryValue);
 

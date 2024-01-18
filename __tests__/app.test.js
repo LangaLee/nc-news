@@ -4,6 +4,7 @@ const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data/index");
 const app = require("../app");
 const fs = require("fs/promises");
+const { expect } = require("@jest/globals");
 
 beforeEach(() => seed(data));
 afterAll(() => db.end());
@@ -316,6 +317,32 @@ describe("testing endpoints", () => {
       expect(response.status).toBe(200);
       expect(typeof article.comment_count).toBe("number");
       expect(article.comment_count).toBe(11);
+    });
+  });
+  describe("GET /api/articles?sort_by=author&&order=asc", () => {
+    test("200: returns articles sorted by the passed query", async () => {
+      const response = await request(app).get(
+        "/api/articles?sort_by=author&&order=asc"
+      );
+      const { articles } = response.body;
+      expect(response.status).toBe(200);
+      expect(articles).toBeSorted({ key: "author", ascending: true });
+    });
+    test("200: returns articles sorted by date descending if no sort or order queries are passed", async () => {
+      const response = await request(app).get("/api/articles");
+      const { articles } = response.body;
+      expect(response.status).toBe(200);
+      expect(articles).toBeSorted({ key: "created_at", descending: true });
+    });
+    test("400: when trying to sort by a query that does not exist sorts by the defualt", async () => {
+      const response = await request(app).get("/api/articles?sort_by=key");
+      expect(response.status).toBe(400);
+      expect(response.body.msg).toBe("Bad Request");
+    });
+    test("400: when trying to order by an order that doesnt exist", async () => {
+      const response = await request(app).get("/api/articles?order=down");
+      expect(response.status).toBe(400);
+      expect(response.body.msg).toBe("Bad Request");
     });
   });
 });
