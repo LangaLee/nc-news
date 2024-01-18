@@ -309,8 +309,13 @@ describe("testing endpoints", () => {
       expect(articles).toHaveLength(0);
     });
   });
+  describe("GET /api/articles/:article_id?comment_count", () => {
+    test("200: returns the requested article with the comment count", async () => {
+      const response = await request(app).get("/api/articles/1?comment_count");
+      const { article } = response.body;
+      expect(response.status).toBe(200);
+      expect(typeof article.comment_count).toBe("number");
+      expect(article.comment_count).toBe(11);
+    });
+  });
 });
-
-/* 
- body: "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
-*/

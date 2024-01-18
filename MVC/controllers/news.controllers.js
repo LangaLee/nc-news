@@ -21,8 +21,8 @@ async function getTopics(req, res, next) {
 async function getArticle(req, res, next) {
   try {
     const { article_id } = req.params;
-
-    const data = await fetchArticle(article_id);
+    const query = req.query;
+    const data = await fetchArticle(article_id, query);
     res.status(200).send({ article: data });
   } catch (error) {
     next(error);
