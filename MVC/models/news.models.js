@@ -50,8 +50,9 @@ async function fetchArticles(query) {
 }
 
 async function fetchEndpoints() {
+  const filePath = __dirname;
   const endpoints = await fs.readFile(
-    "/home/lee/Documents/nc-news/MVC/models/../../endpoints.json",
+    `${filePath}/../../endpoints.json`,
     "utf-8"
   );
   return JSON.parse(endpoints);
