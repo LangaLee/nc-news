@@ -8,13 +8,28 @@ async function fetchTopics() {
   return data;
 }
 
-async function fetchArticle(id) {
-  const data = await db.query(`SELECT * FROM articles 
-  WHERE article_id = ${id}
-  `);
+async function fetchArticle(id, query) {
+  const data = await db.query(
+    `SELECT * FROM articles 
+  WHERE article_id = $1
+  `,
+    [id]
+  );
   if (data.rows.length === 0)
     return Promise.reject({ status: 404, msg: "Not found" });
-  return data.rows[0];
+
+  const article = data.rows[0];
+  if (query !== undefined && Object.keys(query).length !== 0) {
+    const comments = await db.query(
+      `SELECT * FROM comments WHERE article_id = $1`,
+      [id]
+    );
+    const articleCopy = JSON.parse(JSON.stringify(article));
+    articleCopy.comment_count = comments.rows.length;
+    return articleCopy;
+  }
+
+  return article;
 }
 
 async function fetchArticles(query) {
