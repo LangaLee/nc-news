@@ -124,17 +124,6 @@ WHERE article_id = $2 RETURNING *
   return article.rows[0];
 }
 
-async function removeComment(id) {
-  const comment = await db.query(
-    `SELECT * FROM comments WHERE comment_id = $1`,
-    [id]
-  );
-  if (comment.rows[0] === undefined)
-    return Promise.reject({ status: 404, msg: "Not found" });
-  await db.query(`DELETE FROM comments WHERE comment_id = $1`, [id]);
-  return;
-}
-
 module.exports = {
   fetchTopics,
   fetchArticle,
@@ -143,5 +132,4 @@ module.exports = {
   fetchArticleComments,
   addArticleComment,
   updateVote,
-  removeComment,
 };

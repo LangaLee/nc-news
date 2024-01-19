@@ -4,8 +4,6 @@ const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data/index");
 const app = require("../app");
 const fs = require("fs/promises");
-const { expect } = require("@jest/globals");
-const { deserialize } = require("v8");
 
 beforeEach(() => seed(data));
 afterAll(() => db.end());
@@ -357,7 +355,6 @@ describe("testing endpoints", () => {
     test("200: returns a user when passed a valid username", async () => {
       const response = await request(app).get("/api/users/lurker");
       const { user } = response.body;
-      console.log(user);
       expect(response.status).toBe(200);
       expect(typeof user.name).toBe("string");
       expect(typeof user.avatar_url).toBe("string");
@@ -368,6 +365,48 @@ describe("testing endpoints", () => {
       const { msg } = response.body;
       expect(response.status).toBe(404);
       expect(msg).toBe("Not found");
+    });
+  });
+  describe("PATCH /api/comments/:comment_id", () => {
+    test("201: updates the comment when passed a valid body", async () => {
+      const response = await request(app)
+        .patch("/api/comments/1")
+        .send({ inc_votes: 1 });
+      const { comment } = response.body;
+      expect(response.status).toBe(201);
+      expect(comment.votes).toBe(17);
+    });
+    test("400: when trying to update the votes by more than 1", async () => {
+      const response = await request(app)
+        .patch("/api/comments/1")
+        .send({ inc_votes: 2 });
+      const { msg } = response.body;
+      expect(response.status).toBe(400);
+      expect(msg).toBe("Bad Request");
+    });
+    test("400: when trying to update the votes but passing an invalid body", async () => {
+      const response = await request(app)
+        .patch("/api/comments/1")
+        .send({ vote: 1 });
+      const { msg } = response.body;
+      expect(response.status).toBe(400);
+      expect(msg).toBe("Bad Request");
+    });
+    test("404: when trying to update the votes on a comment that does not exit", async () => {
+      const response = await request(app)
+        .patch("/api/comments/200")
+        .send({ inc_votes: 1 });
+      const { msg } = response.body;
+      expect(response.status).toBe(404);
+      expect(msg).toBe("Not found");
+    });
+    test("400: when trying to update the votes but passing an invalid comment_id", async () => {
+      const response = await request(app)
+        .patch("/api/comments/hmm")
+        .send({ inc_votes: 1 });
+      const { msg } = response.body;
+      expect(response.status).toBe(400);
+      expect(msg).toBe("Bad Request");
     });
   });
 });

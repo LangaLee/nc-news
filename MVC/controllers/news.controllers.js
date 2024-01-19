@@ -6,7 +6,6 @@ const {
   fetchArticleComments,
   addArticleComment,
   updateVote,
-  removeComment,
 } = require("../models/news.models");
 
 async function getTopics(req, res, next) {
@@ -78,16 +77,6 @@ async function addVote(req, res, next) {
   }
 }
 
-async function deleteComment(req, res, next) {
-  try {
-    const { comment_id } = req.params;
-    await removeComment(comment_id);
-    res.status(204).send();
-  } catch (error) {
-    next(error);
-  }
-}
-
 module.exports = {
   getTopics,
   getArticle,
@@ -96,5 +85,4 @@ module.exports = {
   getArticleComments,
   postArticleComment,
   addVote,
-  deleteComment,
 };
