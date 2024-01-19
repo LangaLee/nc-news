@@ -28,7 +28,12 @@ app.use((error, req, res, next) => {
   next(error);
 });
 app.use((error, req, res, next) => {
-  if (error.code === "42703" || error.code === "22P02" || error === "400") {
+  if (
+    error.code === "42703" ||
+    error.code === "23502" ||
+    error.code === "22P02" ||
+    error === "400"
+  ) {
     res.status(400).send({ msg: "Bad Request" });
   }
 });

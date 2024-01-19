@@ -409,4 +409,80 @@ describe("testing endpoints", () => {
       expect(msg).toBe("Bad Request");
     });
   });
+  describe("POST /api/articles", () => {
+    test("201: returns the posted article", async () => {
+      const response = await request(app).post("/api/articles").send({
+        author: "lurker",
+        title: "A useless goddess",
+        body: "Well should have chosen something better",
+        topic: "mitch",
+        article_img_url:
+          "https://upload.wikimedia.org/wikipedia/en/4/44/Kazuma_Sato.png",
+      });
+      const { article } = response.body;
+      expect(response.status).toBe(201);
+      expect(typeof article.article_id).toBe("number");
+      expect(typeof article.votes).toBe("number");
+      expect(typeof article.comment_count).toBe("number");
+      expect(typeof article.created_at).toBe("string");
+      expect(article.author).toBe("lurker");
+      expect(article.title).toBe("A useless goddess");
+      expect(article.body).toBe("Well should have chosen something better");
+      expect(article.topic).toBe("mitch");
+      expect(article.article_img_url).toBe(
+        "https://upload.wikimedia.org/wikipedia/en/4/44/Kazuma_Sato.png"
+      );
+    });
+    test("400: when trying to post a new article whilst sending a body without the required keys", async () => {
+      const response = await request(app).post("/api/articles").send({
+        author: "lurker",
+        title: "A useless goddess",
+        body: "Well should have chosen something better",
+        article_img_url:
+          "https://upload.wikimedia.org/wikipedia/en/4/44/Kazuma_Sato.png",
+      });
+      const { msg } = response.body;
+      expect(response.status).toBe(400);
+      expect(msg).toBe("Bad Request");
+    });
+    test("404: when trying to post a new article whilst sending a body with the required values not in the right data type", async () => {
+      const response = await request(app).post("/api/articles").send({
+        author: "lurker",
+        title: "A useless goddess",
+        body: "Well should have chosen something better",
+        topic: 55555,
+        article_img_url:
+          "https://upload.wikimedia.org/wikipedia/en/4/44/Kazuma_Sato.png",
+      });
+      const { msg } = response.body;
+      expect(response.status).toBe(404);
+      expect(msg).toBe("Not found");
+    });
+    test("404: when a user that does not exist is trying to post a new article", async () => {
+      const response = await request(app).post("/api/articles").send({
+        author: "lee",
+        title: "A useless goddess",
+        body: "Well should have chosen something better",
+        topic: "WORLDS",
+        article_img_url:
+          "https://upload.wikimedia.org/wikipedia/en/4/44/Kazuma_Sato.png",
+      });
+      const { msg } = response.body;
+      expect(response.status).toBe(404);
+      expect(msg).toBe("Not found");
+    });
+    test("404: when a user is posting an article to a topic that does not exist", async () => {
+      const response = await request(app).post("/api/articles").send({
+        author: "lurker",
+        title: "A useless goddess",
+        body: "Well should have chosen something better",
+        topic: "WORLDS",
+        article_img_url:
+          "https://upload.wikimedia.org/wikipedia/en/4/44/Kazuma_Sato.png",
+      });
+      const { msg } = response.body;
+      expect(response.status).toBe(404);
+      expect(msg).toBe("Not found");
+    });
+  });
 });

@@ -5,9 +5,10 @@ const {
   addVote,
   postArticleComment,
   getArticles,
-} = require("../MVC/controllers/news.controllers");
+  postArticle,
+} = require("../MVC/controllers/articles.controllers");
 
-articleRouter.get("/", getArticles);
+articleRouter.route("/").get(getArticles).post(postArticle);
 articleRouter
   .route("/:article_id/comments")
   .get(getArticleComments)

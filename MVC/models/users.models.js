@@ -1,4 +1,5 @@
 const db = require("../../db/connection");
+
 async function fetchUsers() {
   const userData = await db.query(`SELECT * FROM users`);
   return userData.rows;
@@ -12,4 +13,5 @@ async function fetchUserByUserName(username) {
   if (user === undefined) return Promise.reject({ status: 404 });
   return user;
 }
+
 module.exports = { fetchUsers, fetchUserByUserName };

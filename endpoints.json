@@ -150,5 +150,19 @@
       "votes": 17,
       "created_at": "2020-04-06T12:17:00.000Z"
     }
+  },
+  "POST /api/articles": {
+    "description": "allwos an existing user to add a new article to an existing topic and returns the new added article",
+    "exampleResponse": {
+      "article_id": 14,
+      "title": "A useless goddess",
+      "topic": "mitch",
+      "author": "lurker",
+      "body": "Well should have chosen something better",
+      "created_at": "2024-01-19T15:55:59.767Z",
+      "votes": 0,
+      "article_img_url": "https://upload.wikimedia.org/wikipedia/en/4/44/Kazuma_Sato.png",
+      "comment_count": 0
+    }
   }
 }

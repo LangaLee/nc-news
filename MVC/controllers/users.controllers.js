@@ -1,4 +1,5 @@
 const { fetchUsers, fetchUserByUserName } = require("../models/users.models");
+
 async function getUsers(req, res, next) {
   try {
     const users = await fetchUsers();
