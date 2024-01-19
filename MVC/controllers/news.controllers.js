@@ -1,5 +1,3 @@
-const { query } = require("../../db/connection");
-const { sort } = require("../../db/data/test-data/articles");
 const {
   fetchTopics,
   fetchArticle,
@@ -9,22 +7,23 @@ const {
   addArticleComment,
   updateVote,
   removeComment,
-  fetchUsers,
 } = require("../models/news.models");
 
 async function getTopics(req, res, next) {
   try {
-    const data = await fetchTopics();
-    res.status(200).send({ topics: data.rows });
-  } catch (error) {}
+    const topics = await fetchTopics();
+    res.status(200).send({ topics });
+  } catch (error) {
+    next(error);
+  }
 }
 
 async function getArticle(req, res, next) {
   try {
     const { article_id } = req.params;
     const query = req.query;
-    const data = await fetchArticle(article_id, query);
-    res.status(200).send({ article: data });
+    const article = await fetchArticle(article_id, query);
+    res.status(200).send({ article });
   } catch (error) {
     next(error);
   }
@@ -62,7 +61,7 @@ async function postArticleComment(req, res, next) {
     const { article_id } = req.params;
     const commentToAdd = req.body;
     const comment = await addArticleComment(article_id, commentToAdd);
-    res.status(202).send({ comment });
+    res.status(201).send({ comment });
   } catch (error) {
     next(error);
   }
@@ -89,15 +88,6 @@ async function deleteComment(req, res, next) {
   }
 }
 
-async function getUsers(req, res, next) {
-  try {
-    const users = await fetchUsers();
-    res.status(200).send({ users });
-  } catch (error) {
-    console.log(error);
-  }
-}
-
 module.exports = {
   getTopics,
   getArticle,
@@ -107,5 +97,4 @@ module.exports = {
   postArticleComment,
   addVote,
   deleteComment,
-  getUsers,
 };

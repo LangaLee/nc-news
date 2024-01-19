@@ -5,7 +5,7 @@ const format = require("pg-format");
 
 async function fetchTopics() {
   const data = await db.query(`Select * FROM topics`);
-  return data;
+  return data.rows;
 }
 
 async function fetchArticle(id, query) {
@@ -28,7 +28,6 @@ async function fetchArticle(id, query) {
     articleCopy.comment_count = comments.rows.length;
     return articleCopy;
   }
-
   return article;
 }
 
@@ -45,7 +44,13 @@ async function fetchArticles(topic, sort_by, order) {
   ];
   const queryValue = [];
 
+  //check if topic exists
   if (topic !== undefined && topic.length !== 0) {
+    const data = await db.query(`SELECT * FROM topics WHERE slug = $1`, [
+      topic,
+    ]);
+    // if topic is not there reject the promise
+    if (data.rows.length === 0) return Promise.reject({ status: 404 });
     queryStr += ` WHERE topic = $1`;
     queryValue.push(topic);
   }
@@ -130,11 +135,6 @@ async function removeComment(id) {
   return;
 }
 
-async function fetchUsers() {
-  const userData = await db.query(`SELECT * FROM users`);
-  return userData.rows;
-}
-
 module.exports = {
   fetchTopics,
   fetchArticle,
@@ -144,5 +144,4 @@ module.exports = {
   addArticleComment,
   updateVote,
   removeComment,
-  fetchUsers,
 };
