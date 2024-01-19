@@ -5,6 +5,7 @@ const data = require("../db/data/test-data/index");
 const app = require("../app");
 const fs = require("fs/promises");
 const { expect } = require("@jest/globals");
+const { deserialize } = require("v8");
 
 beforeEach(() => seed(data));
 afterAll(() => db.end());
@@ -14,8 +15,8 @@ describe("testing endpoints", () => {
       const response = await request(app).get("/api/topics");
       expect(response.status).toBe(200);
       response.body.topics.forEach((topic) => {
-        expect(topic.hasOwnProperty("slug")).toBe(true);
-        expect(topic.hasOwnProperty("description")).toBe(true);
+        expect(typeof topic.slug).toBe("string");
+        expect(typeof topic.description).toBe("string");
       });
     });
     test("404: if the end point being send is not available", async () => {
@@ -33,14 +34,14 @@ describe("testing endpoints", () => {
     test("200: return the articles with all the properties", async () => {
       const response = await request(app).get("/api/articles/1");
       const article = response.body.article;
-      expect(article.hasOwnProperty("author")).toBe(true);
-      expect(article.hasOwnProperty("title")).toBe(true);
-      expect(article.hasOwnProperty("article_id")).toBe(true);
-      expect(article.hasOwnProperty("body")).toBe(true);
-      expect(article.hasOwnProperty("topic")).toBe(true);
-      expect(article.hasOwnProperty("created_at")).toBe(true);
-      expect(article.hasOwnProperty("votes")).toBe(true);
-      expect(article.hasOwnProperty("article_img_url")).toBe(true);
+      expect(typeof article.author).toBe("string");
+      expect(typeof article.title).toBe("string");
+      expect(typeof article.article_id).toBe("number");
+      expect(typeof article.body).toBe("string");
+      expect(typeof article.topic).toBe("string");
+      expect(typeof article.created_at).toBe("string");
+      expect(typeof article.votes).toBe("number");
+      expect(typeof article.article_img_url).toBe("string");
     });
     test("404: when passed an id that is valid but does not exist", async () => {
       const response = await request(app).get("/api/articles/9000");
@@ -117,6 +118,7 @@ describe("testing endpoints", () => {
     test("200: each object has properties", async () => {
       const response = await request(app).get("/api/articles/1/comments");
       const articleComments = response.body.comments;
+      expect(articleComments.length).toBe(11);
       articleComments.forEach((comment) => {
         expect(typeof comment.votes).toBe("number");
         expect(typeof comment.votes).toBe("number");
@@ -159,7 +161,7 @@ describe("testing endpoints", () => {
       const response = await request(app)
         .post("/api/articles/1/comments")
         .send({
-          username: "Anonymous",
+          username: "lurker",
         });
       expect(response.status).toBe(400);
       expect(response.body.msg).toBe("Bad Request");
@@ -176,7 +178,7 @@ describe("testing endpoints", () => {
       const response = await request(app)
         .post("/api/articles/600/comments")
         .send({
-          username: "Anonymous",
+          username: "lurker",
           body: "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
         });
       expect(response.status).toBe(404);
@@ -186,13 +188,13 @@ describe("testing endpoints", () => {
       const response = await request(app)
         .post("/api/articles/hmm/comments")
         .send({
-          username: "Anonymous",
+          username: "lurker",
           body: "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
         });
       expect(response.status).toBe(400);
       expect(response.body.msg).toBe("Bad Request");
     });
-    test("202: adds the comment posted", async () => {
+    test("201: adds the comment posted", async () => {
       const response = await request(app)
         .post("/api/articles/1/comments")
         .send({
@@ -200,7 +202,7 @@ describe("testing endpoints", () => {
           body: "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
         });
       const comment = response.body.comment;
-      expect(response.status).toBe(202);
+      expect(response.status).toBe(201);
       expect(typeof comment.comment_id).toBe("number");
       expect(typeof comment.body).toBe("string");
       expect(typeof comment.article_id).toBe("number");
@@ -208,7 +210,7 @@ describe("testing endpoints", () => {
       expect(typeof comment.votes).toBe("number");
       expect(typeof comment.created_at).toBe("string");
     });
-    test("400: when a user does not exist", async () => {
+    test("404: when a user does not exist", async () => {
       const response = await request(app)
         .post("/api/articles/1/comments")
         .send({
@@ -216,8 +218,8 @@ describe("testing endpoints", () => {
           body: "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
         });
       const message = response.body.msg;
-      expect(response.status).toBe(400);
-      expect(message).toBe("Bad Request");
+      expect(response.status).toBe(404);
+      expect(message).toBe("Not found");
     });
   });
   describe("PACTH /api/articles/:article_id", () => {
@@ -247,13 +249,13 @@ describe("testing endpoints", () => {
         .patch("/api/articles/1")
         .send({ inc_votes: -2 });
       const { article } = response.body;
+      expect(article.votes).toBe(98);
       expect(response.status).toBe(200);
       expect(typeof article.author).toBe("string");
       expect(typeof article.title).toBe("string");
       expect(typeof article.article_id).toBe("number");
       expect(typeof article.topic).toBe("string");
       expect(typeof article.created_at).toBe("string");
-      expect(typeof article.votes).toBe("number");
       expect(typeof article.article_img_url).toBe("string");
     });
   });
@@ -279,6 +281,7 @@ describe("testing endpoints", () => {
       const response = await request(app).get("/api/users");
       const users = response.body.users;
       expect(response.status).toBe(200);
+      expect(users.length).toBe(4);
       users.forEach((user) => {
         expect(typeof user.username).toBe("string");
         expect(typeof user.name).toBe("string");
@@ -291,10 +294,9 @@ describe("testing endpoints", () => {
       const response = await request(app).get("/api/articles?topic=mitch");
       const { articles } = response.body;
       expect(response.status).toBe(200);
-      const query = articles.every((article) => {
-        return article.topic === "mitch";
+      articles.forEach((article) => {
+        expect(article.topic).toBe("mitch");
       });
-      expect(query).toBe(true);
     });
     test("200: returns all articles if query is omitted", async () => {
       const response = await request(app).get("/api/articles?topic");
@@ -303,11 +305,17 @@ describe("testing endpoints", () => {
       expect(Array.isArray(articles)).toBe(true);
       expect(articles.length).toBe(13);
     });
-    test("200: when passed the query is a topic that doesnt exist", async () => {
+    test("404: when passed the query is a topic that doesnt exist", async () => {
       const response = await request(app).get("/api/articles?topic=music");
+      const { msg } = response.body;
+      expect(response.status).toBe(404);
+      expect(msg).toBe("Not found");
+    });
+    test("200: when passed a topic that exists but has no articles", async () => {
+      const response = await request(app).get("/api/articles?topic=paper");
       const { articles } = response.body;
       expect(response.status).toBe(200);
-      expect(articles).toHaveLength(0);
+      expect(articles.length).toBe(0);
     });
   });
   describe("GET /api/articles/:article_id?comment_count", () => {
@@ -343,6 +351,23 @@ describe("testing endpoints", () => {
       const response = await request(app).get("/api/articles?order=down");
       expect(response.status).toBe(400);
       expect(response.body.msg).toBe("Bad Request");
+    });
+  });
+  describe("GET /api/users/:username", () => {
+    test("200: returns a user when passed a valid username", async () => {
+      const response = await request(app).get("/api/users/lurker");
+      const { user } = response.body;
+      console.log(user);
+      expect(response.status).toBe(200);
+      expect(typeof user.name).toBe("string");
+      expect(typeof user.avatar_url).toBe("string");
+      expect(user.username).toBe("lurker");
+    });
+    test("404: when passed a username that does not exist", async () => {
+      const response = await request(app).get("/api/users/rain");
+      const { msg } = response.body;
+      expect(response.status).toBe(404);
+      expect(msg).toBe("Not found");
     });
   });
 });
