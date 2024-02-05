@@ -10,6 +10,11 @@ const {
   deleteComment,
   getUsers,
 } = require("./MVC/controllers/news.controllers");
+
+const cors = require("cors");
+
+app.use(cors());
+
 const apiRouter = require("./routers/api-router");
 const app = express();
 
@@ -37,4 +42,5 @@ app.use((error, req, res, next) => {
     res.status(400).send({ msg: "Bad Request" });
   }
 });
+
 module.exports = app;
