@@ -36,6 +36,7 @@ async function fetchArticles(topic, sort_by, order) {
     "TITLE",
     "VOTES",
     "COMMENT_COUNT",
+    "CREATED_AT",
   ];
   const queryValue = [];
 

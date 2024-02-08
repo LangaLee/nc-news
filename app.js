@@ -1,15 +1,4 @@
 const express = require("express");
-const {
-  getTopics,
-  getArticle,
-  getArticles,
-  getEndpoints,
-  getArticleComments,
-  postArticleComment,
-  addVote,
-  deleteComment,
-  getUsers,
-} = require("./MVC/controllers/news.controllers");
 
 const cors = require("cors");
 
