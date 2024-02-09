@@ -2,7 +2,7 @@
 
 This is the Northcoders-news database that stores articles, users and comments. You can find it at https://fun-news.onrender.com/api. This api works by accessing data stored on the database by users and allows the users to edit the data.
 
-# How run locally
+# How to run locally
 
 Clone the repository to your local machine
 Install the packages required using npm install
