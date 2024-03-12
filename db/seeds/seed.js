@@ -6,9 +6,13 @@ const {
   formatComments,
 } = require("./utils");
 
-const seed = ({ topicData, userData, articleData, commentData }) => {
+const seed = ({ topicData, userData, articleData, commentData, likesData }) => {
   return db
-    .query(`DROP TABLE IF EXISTS comments;`)
+    .query(`DROP TABLE IF EXISTS likes`)
+    .then(() => {
+      return db.query(`DROP TABLE IF EXISTS comments;`);
+    })
+
     .then(() => {
       return db.query(`DROP TABLE IF EXISTS articles;`);
     })
@@ -18,6 +22,7 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
     .then(() => {
       return db.query(`DROP TABLE IF EXISTS topics;`);
     })
+
     .then(() => {
       const topicsTablePromise = db.query(`
       CREATE TABLE topics (
@@ -113,6 +118,24 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
         )
       );
       return db.query(insertCommentsQueryStr);
+    })
+    .then(() => {
+      return db.query(`CREATE TABLE likes (
+        username VARCHAR REFERENCES users (username) NOT NULL,
+        article_id INT REFERENCES articles (article_id) NOT NULL,
+        likes INT NOT NULL
+      );`);
+    })
+    .then(() => {
+      const insertLikesQueryStr = format(
+        `INSERT INTO likes (username, article_id, likes) VALUES %L;`,
+        likesData.map((object) => [
+          object.username,
+          object.article_id,
+          object.likes,
+        ])
+      );
+      return db.query(insertLikesQueryStr);
     });
 };
 

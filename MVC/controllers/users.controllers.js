@@ -1,4 +1,9 @@
-const { fetchUsers, fetchUserByUserName } = require("../models/users.models");
+const {
+  fetchUsers,
+  fetchUserByUserName,
+  fetchLikesByUsername,
+  postUserLikes,
+} = require("../models/users.models");
 
 async function getUsers(req, res, next) {
   try {
@@ -19,4 +24,31 @@ async function getUserByUsername(req, res, next) {
   }
 }
 
-module.exports = { getUsers, getUserByUsername };
+async function getUserLikes(req, res, next) {
+  try {
+    const { username } = req.params;
+    const promises = await Promise.all([
+      fetchUserByUserName(username),
+      fetchLikesByUsername(username),
+    ]);
+    res.status(200).send({ likes: promises[1] });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function addUserLikes(req, res, next) {
+  try {
+    const { username } = req.params;
+    const likes = req.body;
+    const promises = await Promise.all([
+      fetchUserByUserName(username),
+      postUserLikes(likes),
+    ]);
+    res.status(201).send({});
+  } catch (error) {
+    next(error);
+  }
+}
+
+module.exports = { getUsers, getUserByUsername, getUserLikes, addUserLikes };

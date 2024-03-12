@@ -1,5 +1,5 @@
 const db = require("../../db/connection");
-
+const format = require("pg-format");
 async function fetchUsers() {
   const userData = await db.query(`SELECT * FROM users`);
   return userData.rows;
@@ -14,4 +14,25 @@ async function fetchUserByUserName(username) {
   return user;
 }
 
-module.exports = { fetchUsers, fetchUserByUserName };
+async function fetchLikesByUsername(username) {
+  const data = await db.query(`SELECT * FROM likes WHERE username = $1`, [
+    username,
+  ]);
+  const likes = data.rows;
+  return likes;
+}
+
+async function postUserLikes(likes) {
+  const data = await db.query(
+    format(`INSERT INTO likes (username, article_id, likes) VALUES %L;`, [
+      [likes.username, likes.article_id, likes.likes],
+    ])
+  );
+}
+
+module.exports = {
+  fetchUsers,
+  fetchUserByUserName,
+  fetchLikesByUsername,
+  postUserLikes,
+};

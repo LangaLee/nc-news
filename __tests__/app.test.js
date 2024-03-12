@@ -485,4 +485,39 @@ describe("testing endpoints", () => {
       expect(msg).toBe("Not found");
     });
   });
+  describe("GET /users/:username/likes", () => {
+    test("200: gets the likes by that user", async () => {
+      const response = await request(app).get("/api/users/lurker/likes");
+      const { likes } = response.body;
+      expect(response.status).toBe(200);
+      expect(likes.length).toBe(4);
+      likes.forEach((like) => {
+        expect(like.username).toBe("lurker");
+      });
+    });
+    test("404: when a user does not exist", async () => {
+      const response = await request(app).get("/api/users/lee/likes");
+      expect(response.status).toBe(404);
+      expect(response.body.msg).toBe("Not found");
+    });
+    test("200: when there are no likes by the user", async () => {
+      test;
+    });
+  });
+  describe("POST /users/:username/likes", () => {
+    test("201: posts the likes", async () => {
+      const response = await request(app)
+        .post("/api/users/lurker/likes")
+        .send({ username: "lurker", article_id: 5, likes: -1 });
+      const { likes } = response.body;
+      expect(response.status).toBe(201);
+    });
+    test("400: when trying to post likes without the neccessary key value pairs", async () => {
+      const response = await request(app)
+        .post("/api/users/lurker/likes")
+        .send({ username: "lurker", article_id: 5 });
+      expect(response.status).toBe(400);
+      expect(response.body.msg).toBe("Bad Request");
+    });
+  });
 });
