@@ -31,9 +31,18 @@ async function postUserLikes(likes) {
   );
 }
 
+async function changeUserLikes(username, id, value) {
+  const data = await db.query(
+    `UPDATE likes SET likes = $1 WHERE username = $2 AND article_id = $3 RETURNING *;`,
+    [value.likes, username, id]
+  );
+  return data.rows[0];
+}
+
 module.exports = {
   fetchUsers,
   fetchUserByUserName,
   fetchLikesByUsername,
   postUserLikes,
+  changeUserLikes,
 };

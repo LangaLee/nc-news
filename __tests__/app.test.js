@@ -503,7 +503,7 @@ describe("testing endpoints", () => {
       const response = await request(app).get("/api/users/rogersop/1/likes");
       expect(response.status).toBe(200);
       const { likes } = response.body;
-      expect(likes).toHaveLength(0);
+      expect(likes).toBe(undefined);
     });
   });
   describe("POST /users/:username/likes", () => {
@@ -520,6 +520,32 @@ describe("testing endpoints", () => {
         .send({ username: "lurker", article_id: 5 });
       expect(response.status).toBe(400);
       expect(response.body.msg).toBe("Bad Request");
+    });
+  });
+  describe("PATCH /users/:username/:article:id/likes/", () => {
+    test("patches the likes", async () => {
+      const response = await request(app)
+        .patch("/api/users/lurker/1/likes")
+        .send({ likes: -1 });
+      const { likes } = response.body;
+      expect(response.status).toBe(200);
+      expect(likes.likes).toBe(-1);
+    });
+    test("when trying to patch likes on an article that doesnt exist", async () => {
+      const response = await request(app)
+        .patch("/api/users/lurker/500/likes")
+        .send({ likes: -1 });
+      const { msg } = response.body;
+      expect(response.status).toBe(404);
+      expect(msg).toBe("Not found");
+    });
+    test("when trying to patch likes for a user that does not exist", async () => {
+      const response = await request(app)
+        .patch("/api/users/lee/500/likes")
+        .send({ likes: -1 });
+      const { msg } = response.body;
+      expect(response.status).toBe(404);
+      expect(msg).toBe("Not found");
     });
   });
 });
