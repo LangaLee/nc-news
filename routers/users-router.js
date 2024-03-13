@@ -8,6 +8,7 @@ const userRouter = require("express").Router();
 
 userRouter.get("/", getUsers);
 userRouter.get("/:username", getUserByUsername);
-userRouter.route("/:username/likes").get(getUserLikes).post(addUserLikes);
+userRouter.route("/:username/:article_id/likes").get(getUserLikes);
+userRouter.route("/:username/likes").post(addUserLikes);
 
 module.exports = userRouter;

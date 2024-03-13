@@ -27,9 +27,10 @@ async function getUserByUsername(req, res, next) {
 async function getUserLikes(req, res, next) {
   try {
     const { username } = req.params;
+    const { article_id } = req.params;
     const promises = await Promise.all([
       fetchUserByUserName(username),
-      fetchLikesByUsername(username),
+      fetchLikesByUsername(username, article_id),
     ]);
     res.status(200).send({ likes: promises[1] });
   } catch (error) {

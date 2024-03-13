@@ -485,23 +485,22 @@ describe("testing endpoints", () => {
       expect(msg).toBe("Not found");
     });
   });
-  describe("GET /users/:username/likes", () => {
-    test("200: gets the likes by that user", async () => {
-      const response = await request(app).get("/api/users/lurker/likes");
+  describe("GET /users/:username/:article_id/likes", () => {
+    test("200: gets the likes by that user for the specific article", async () => {
+      const response = await request(app).get("/api/users/lurker/1/likes/");
       const { likes } = response.body;
       expect(response.status).toBe(200);
-      expect(likes.length).toBe(4);
-      likes.forEach((like) => {
-        expect(like.username).toBe("lurker");
-      });
+      expect(likes.username).toBe("lurker");
+      expect(likes.article_id).toBe(1);
+      expect(likes.likes).toBe(1);
     });
     test("404: when a user does not exist", async () => {
-      const response = await request(app).get("/api/users/lee/likes");
+      const response = await request(app).get("/api/users/lee/1/likes");
       expect(response.status).toBe(404);
       expect(response.body.msg).toBe("Not found");
     });
     test("200: when there are no likes by the user", async () => {
-      const response = await request(app).get("/api/users/rogersop/likes");
+      const response = await request(app).get("/api/users/rogersop/1/likes");
       expect(response.status).toBe(200);
       const { likes } = response.body;
       expect(likes).toHaveLength(0);

@@ -14,11 +14,12 @@ async function fetchUserByUserName(username) {
   return user;
 }
 
-async function fetchLikesByUsername(username) {
-  const data = await db.query(`SELECT * FROM likes WHERE username = $1`, [
-    username,
-  ]);
-  const likes = data.rows;
+async function fetchLikesByUsername(username, id) {
+  const data = await db.query(
+    `SELECT * FROM likes WHERE username = $1 AND article_id = $2`,
+    [username, id]
+  );
+  const likes = data.rows[0];
   return likes;
 }
 
