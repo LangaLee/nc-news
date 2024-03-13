@@ -501,7 +501,10 @@ describe("testing endpoints", () => {
       expect(response.body.msg).toBe("Not found");
     });
     test("200: when there are no likes by the user", async () => {
-      test;
+      const response = await request(app).get("/api/users/rogersop/likes");
+      expect(response.status).toBe(200);
+      const { likes } = response.body;
+      expect(likes).toHaveLength(0);
     });
   });
   describe("POST /users/:username/likes", () => {
