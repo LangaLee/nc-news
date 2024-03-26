@@ -39,10 +39,18 @@ async function changeUserLikes(username, id, value) {
   return data.rows[0];
 }
 
+async function addUser(user) {
+  const data = Object.keys(user).map((key) => user[key]);
+  await db.query(
+    format(`INSERT INTO users (username, name, avatar_url) VALUES %L;`, [data])
+  );
+}
+
 module.exports = {
   fetchUsers,
   fetchUserByUserName,
   fetchLikesByUsername,
   postUserLikes,
   changeUserLikes,
+  addUser,
 };

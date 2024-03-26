@@ -485,7 +485,7 @@ describe("testing endpoints", () => {
       expect(msg).toBe("Not found");
     });
   });
-  describe("GET /users/:username/:article_id/likes", () => {
+  describe("GET /api/users/:username/:article_id/likes", () => {
     test("200: gets the likes by that user for the specific article", async () => {
       const response = await request(app).get("/api/users/lurker/1/likes/");
       const { likes } = response.body;
@@ -506,7 +506,7 @@ describe("testing endpoints", () => {
       expect(likes).toBe(undefined);
     });
   });
-  describe("POST /users/:username/likes", () => {
+  describe("POST /api/users/:username/likes", () => {
     test("201: posts the likes", async () => {
       const response = await request(app)
         .post("/api/users/lurker/likes")
@@ -522,7 +522,7 @@ describe("testing endpoints", () => {
       expect(response.body.msg).toBe("Bad Request");
     });
   });
-  describe("PATCH /users/:username/:article:id/likes/", () => {
+  describe("PATCH /api/users/:username/:article_id/likes", () => {
     test("patches the likes", async () => {
       const response = await request(app)
         .patch("/api/users/lurker/1/likes")
@@ -546,6 +546,25 @@ describe("testing endpoints", () => {
       const { msg } = response.body;
       expect(response.status).toBe(404);
       expect(msg).toBe("Not found");
+    });
+  });
+  describe("POST /api/users", () => {
+    test("201: adds a new user", async () => {
+      const response = await request(app).post("/api/users").send({
+        username: "trashboat",
+        name: "rigby",
+        avatar_url:
+          "https://static1.colliderimages.com/wordpress/wp-content/uploads/2023/06/rigby-graduation-regular-show-cropped.jpg",
+      });
+      expect(response.status).toBe(201);
+      const user = await request(app).get("/api/users/trashboat");
+      expect(user.status).toBe(200);
+      expect(user.body.user).toEqual({
+        username: "trashboat",
+        name: "rigby",
+        avatar_url:
+          "https://static1.colliderimages.com/wordpress/wp-content/uploads/2023/06/rigby-graduation-regular-show-cropped.jpg",
+      });
     });
   });
 });

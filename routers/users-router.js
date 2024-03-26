@@ -4,10 +4,11 @@ const {
   getUserLikes,
   addUserLikes,
   updateUserLikes,
+  postUser,
 } = require("../MVC/controllers/users.controllers");
 const userRouter = require("express").Router();
 
-userRouter.get("/", getUsers);
+userRouter.route("/").get(getUsers).post(postUser);
 userRouter.get("/:username", getUserByUsername);
 userRouter
   .route("/:username/:article_id/likes")

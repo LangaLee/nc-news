@@ -152,7 +152,7 @@
     }
   },
   "POST /api/articles": {
-    "description": "allwos an existing user to add a new article to an existing topic and returns the new added article",
+    "description": "allows an existing user to add a new article to an existing topic and returns the new added article",
     "exampleResponse": {
       "article_id": 14,
       "title": "A useless goddess",
@@ -164,5 +164,25 @@
       "article_img_url": "https://upload.wikimedia.org/wikipedia/en/4/44/Kazuma_Sato.png",
       "comment_count": 0
     }
+  },
+  "POST /api/users": {
+    "description": "allows one to post a new user to the database",
+    "requirements": {
+      "username": "user1",
+      "name": "user",
+      "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+    }
+  },
+  "GET /api/users/:username/:article_id/likes": {
+    "description": "allows one to get the user like object from the database",
+    "exampleResponse": { "username": "lurker", "article_id": 1, "likes": 1 }
+  },
+  "POST /api/users/:username/likes": {
+    "description": "allows one to post a user's likes object on a specific article",
+    "requirements": { "username": "lurker", "article_id": 1, "likes": 1 }
+  },
+  "PATCH /api/users/:username/:article_id/likes": {
+    "description": "patches a user's like object in the database",
+    "requirements": { "likes": -1 }
   }
 }

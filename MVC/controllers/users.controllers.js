@@ -4,6 +4,7 @@ const {
   fetchLikesByUsername,
   postUserLikes,
   changeUserLikes,
+  addUser,
 } = require("../models/users.models");
 const { fetchArticle } = require("../models/articles.models");
 
@@ -68,10 +69,21 @@ async function updateUserLikes(req, res, next) {
   }
 }
 
+async function postUser(req, res, next) {
+  try {
+    const user = req.body;
+    await addUser(user);
+    res.status(201).send({});
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   getUsers,
   getUserByUsername,
   getUserLikes,
   addUserLikes,
   updateUserLikes,
+  postUser,
 };

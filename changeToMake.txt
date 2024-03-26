@@ -1,2 +1,0 @@
-separate the controllers and models further
-likes need patching and deleting an making sure that it doesnt make duplicate likes
