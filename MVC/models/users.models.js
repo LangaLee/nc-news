@@ -40,7 +40,18 @@ async function changeUserLikes(username, id, value) {
 }
 
 async function addUser(user) {
+  if (
+    typeof user.username !== "string" ||
+    typeof user.name !== "string" ||
+    typeof user.avatar_url !== "string"
+  ) {
+    return Promise.reject({ status: 400 });
+  }
   const data = Object.keys(user).map((key) => user[key]);
+  const userExists = await db.query(`SELECT * FROM users WHERE username = $1`, [
+    user.username,
+  ]);
+  if (userExists.rows.length > 0) return Promise.reject({ status: 400 });
   await db.query(
     format(`INSERT INTO users (username, name, avatar_url) VALUES %L;`, [data])
   );

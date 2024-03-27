@@ -566,5 +566,24 @@ describe("testing endpoints", () => {
           "https://static1.colliderimages.com/wordpress/wp-content/uploads/2023/06/rigby-graduation-regular-show-cropped.jpg",
       });
     });
+    test("400: when a user already exists in the database", async () => {
+      const response = await request(app).post("/api/users").send({
+        username: "lurker",
+        name: "do nothing",
+        avatar_url:
+          "https://static1.colliderimages.com/wordpress/wp-content/uploads/2023/06/rigby-graduation-regular-show-cropped.jpg",
+      });
+      const { msg } = response.body;
+      expect(response.status).toBe(400);
+      expect(msg).toBe("Bad Request");
+    });
+    test("400: when a user send an object without the required keys", async () => {
+      const response = await request(app)
+        .post("/api/users")
+        .send({ username: "rigbone", name: "rigby" });
+      const { msg } = response.body;
+      expect(response.status).toBe(400);
+      expect(msg).toBe("Bad Request");
+    });
   });
 });

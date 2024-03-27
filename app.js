@@ -24,7 +24,7 @@ app.use((error, req, res, next) => {
     error.code === "42703" ||
     error.code === "23502" ||
     error.code === "22P02" ||
-    error === "400"
+    error.status === 400
   ) {
     res.status(400).send({ msg: "Bad Request" });
   }

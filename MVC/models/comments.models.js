@@ -23,7 +23,7 @@ async function changeCommentVotes(id, votes) {
       [id, votes]
     );
     return comment.rows[0];
-  } else return Promise.reject("400");
+  } else return Promise.reject({ status: 400 });
 }
 
 module.exports = { removeComment, changeCommentVotes };
