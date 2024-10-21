@@ -8,6 +8,7 @@ async function removeComment(id) {
   if (comment.rows[0] === undefined)
     return Promise.reject({ status: 404, msg: "Not found" });
   await db.query(`DELETE FROM comments WHERE comment_id = $1`, [id]);
+
   return;
 }
 

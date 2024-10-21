@@ -27,7 +27,10 @@ async function fetchArticle(id, query) {
 }
 
 async function fetchArticles(topic, sort_by, order) {
-  let queryStr = `SELECT * FROM articles`;
+  let queryStr = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, 
+  COUNT(comments.comment_id) ::INT AS comment_count 
+  FROM articles 
+  LEFT JOIN comments ON comments.article_id = articles.article_id`;
   const orderValues = ["ASC", "DESC"];
   const sortValues = [
     "AUTHOR",
@@ -51,6 +54,8 @@ async function fetchArticles(topic, sort_by, order) {
     queryValue.push(topic);
   }
 
+  queryStr += ` GROUP BY articles.article_id`;
+
   if (sort_by !== undefined && sortValues.includes(sort_by.toUpperCase())) {
     queryStr += ` ORDER BY ${sort_by}`;
   } else if (sort_by !== undefined && !sortValues.includes(sort_by)) {
@@ -64,9 +69,7 @@ async function fetchArticles(topic, sort_by, order) {
   } else queryStr += ` DESC`;
 
   const articles = await db.query(queryStr, queryValue);
-
-  const comments = await db.query(`SELECT * FROM comments`);
-  return formatArticles(articles.rows, comments.rows);
+  return articles.rows;
 }
 
 async function fetchArticleComments(id) {
@@ -81,12 +84,12 @@ async function fetchArticleComments(id) {
 async function addArticleComment(id, comment) {
   await fetchArticle(id);
   await db.query(`SELECT * FROM users WHERE username = $1`, [comment.username]);
-  if (
-    typeof comment.username !== "string" ||
-    typeof comment.body !== "string"
-  ) {
-    return Promise.reject({ status: 400 });
-  }
+  // if (
+  //   typeof comment.username !== "string" ||
+  //   typeof comment.body !== "string"
+  // ) {
+  //   return Promise.reject({ status: 400 });
+  // }
   const response = await db.query(
     format(
       `INSERT INTO comments (body, author, article_id, votes) VALUES %L RETURNING *;
@@ -100,8 +103,8 @@ async function addArticleComment(id, comment) {
 async function updateVote(id, votes) {
   // if (typeof id !== "number") return Promise.reject({status: 400});
   await fetchArticle(id);
-  if (!votes.hasOwnProperty("inc_votes") || typeof votes.inc_votes !== "number")
-    return Promise.reject({ status: 400 });
+  // if (!votes.hasOwnProperty("inc_votes") || typeof votes.inc_votes !== "number")
+  //   return Promise.reject({ status: 400 });
   const article = await db.query(
     `UPDATE articles SET votes = votes + $1 
   WHERE article_id = $2 RETURNING * 

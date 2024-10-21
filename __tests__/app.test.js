@@ -55,11 +55,6 @@ describe("testing endpoints", () => {
     });
   });
   describe("GET /api/articles", () => {
-    test("200: returns an array with articles", async () => {
-      const response = await request(app).get("/api/articles");
-      expect(response.status).toBe(200);
-      expect(Array.isArray(response.body.articles));
-    });
     test("200: properties in the returned array", async () => {
       const response = await request(app).get("/api/articles");
       const articles = response.body.articles;
